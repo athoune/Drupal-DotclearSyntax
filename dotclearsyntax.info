@@ -1,0 +1,7 @@
+; $Id$
+name = DotClear wiki Syntax
+description = Use the wiki syntax of dotclear
+package = "Input filters"
+dependencies[] = filter
+core = 6.x
+php = 5.2

@@ -1,0 +1,86 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ */
+
+function dotclearsyntax_filter($op, $delta = 0, $format = -1, $text = '') {
+	switch($op) {
+		case 'list' :
+			return array(0 => t('DotClear syntax filter'));
+		case 'description':
+			return t('Using dotclear wiki syntax');
+		case 'settings':
+			break;
+		case 'no cache':
+			return FALSE;
+		case 'prepare':
+			return $text;
+		case 'process' :
+			return _dotclear_process($text, $format);
+		default:
+			return $text;
+	}
+
+}
+
+/**
+ * Implementation of hook_block().
+ *
+ * Provides help for markdown syntax.
+ */
+function dotclearsyntax_block($op = 'list', $delta = 0, $edit = array()) {
+  switch($op) {
+    case 'list':
+      return array('help' => array('info' => t('Dotclear filter tips')));
+    case 'view':
+      switch($delta) {
+        case 'help':
+          return array(
+            'subject' => t('Dotclear filter tips'),
+            'content' => _dotclear_help_block()
+          );
+      }
+  }
+}
+
+/**
+ * Implementation of hook_filter_tips().
+ */
+function dotclearsyntax_filter_tips($delta = 0, $format = -1, $long) {
+  if ($long) {
+		$w = _dc_factory();
+		return $w->help();
+  } else {
+  //version light
+  }
+}
+
+/**
+ * Provides content for the markdown help block.
+ */
+
+function _dc_factory() {
+	include_once drupal_get_path('module', 'dotclearsyntax') .'/class.wiki2xhtml.php';
+	$w = new wiki2xhtml();
+	$w->setOpt('first_title_level', 1);
+	$w->setOpt('active_acronym',0);
+	$w->setOpt('active_img',1);
+	return $w;
+}
+
+function _dotclear_help_block(){
+		$w = _dc_factory();
+	return $w->help();
+}
+
+function _dotclear_process($text, $format) {
+	if (!empty($text)) {
+		$w = _dc_factory();
+		$text = $w->transform($text);
+		//var_dump($text);
+	}
+	return $text;
+
+}
